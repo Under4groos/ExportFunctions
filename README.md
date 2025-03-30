@@ -1,17 +1,15 @@
 # ExportFunctions
 
-Конвертирует нативные функции и структуры в C# для их вызова. 
-
+Конвертирует нативные функции и структуры в C# для их вызова.
 
 ## Пример С++ функции
+
 ```C++
 #define ExportFunction extern "C" __declspec(dllexport)
 ExportFunction WinProcStruct TestFunctionResult(int i , int a , int b , int c) {
 	return ListWinProcStruct[i];
 }
 ```
-
-
 
 ```cs
 using ExportFunctions.Application.Helper;
@@ -51,4 +49,37 @@ Console.ReadLine();
 #if !DEBUG
 goto writepath;
 #endif
+```
+
+## Результат
+
+ExternFunctions.cs
+
+```cs
+using System.Runtime.InteropServices;
+namespace Interop
+{
+	public static class Interop
+	{
+		//[0] E:\VisualStudio\repos\WinExportedFuncs\WinExportedFuncs\dllmain.cpp
+		[DllImport(Lib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "TestFunctionResult")]
+		public static extern WinProcStruct TestFunctionResult(int i,int a,int b,int c);
+    }
+}
+```
+
+ExternStructures
+
+```cs
+// E:\VisualStudio\repos\WinExportedFuncs\WinExportedFuncs\WinProcStruct.h
+public struct WinProcStruct
+{
+   public IntPtr hwnd;
+   public IntPtr lParam;
+   public uint processId;
+   public override string ToString()
+   {
+      return $" { this.hwnd.ToString()} { this.lParam.ToString()} { this.processId.ToString()}";
+   }
+}
 ```
