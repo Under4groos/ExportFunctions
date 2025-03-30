@@ -17,6 +17,11 @@ if (!Directory.Exists(path))
 #endif
 using (SolutionNativeExport solutionExport = new SolutionNativeExport())
 {
+    // #define ExportFunction extern "C" __declspec(dllexport)
+    solutionExport.DefineExportFunction = "ExportFunction";
+
+    // Дирректоиря для экспорта.
+    solutionExport.Exports = "Exports";
     solutionExport.OnCompleted += (StructResultExtern result) =>
     {
         Console.WriteLine(result.Span);

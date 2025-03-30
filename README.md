@@ -14,13 +14,11 @@ ExportFunction WinProcStruct TestFunctionResult(int i , int a , int b , int c) {
 
 
 ```cs
-
 using ExportFunctions.Application.Helper;
 using ExportFunctions.Application.Structures;
 
 string path = string.Empty;
 #if DEBUG
-// Путь к проекту. Не к решению, а к проекту!
 path = @"E:\VisualStudio\repos\WinExportedFuncs\WinExportedFuncs";
 #else
 writepath:
@@ -35,6 +33,11 @@ if (!Directory.Exists(path))
 #endif
 using (SolutionNativeExport solutionExport = new SolutionNativeExport())
 {
+    // #define ExportFunction extern "C" __declspec(dllexport)
+    solutionExport.DefineExportFunction = "ExportFunction";
+
+    // Дирректоиря для экспорта.
+    solutionExport.Exports = "Exports";
     solutionExport.OnCompleted += (StructResultExtern result) =>
     {
         Console.WriteLine(result.Span);

@@ -31,7 +31,10 @@ namespace ExportFunctions.Application.Helper
         public List<string> Files { get; private set; } = new List<string>();
         public string MainFile { get; private set; }
 
-        private const string Exports = "Exports";
+        public string Exports
+        {
+            get; set;
+        } = "Exports";
         public string DirectoryExport
         {
             get; set;
