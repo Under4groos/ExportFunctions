@@ -11,6 +11,9 @@ namespace ExportFunctions.Application.Structures
         public string ToCSharpCode( bool isOverideToString = true)
         {
             StringBuilder buildStructure = new StringBuilder();
+
+            // [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+            buildStructure.AppendLine($"[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]");
             buildStructure.AppendLine($"public struct {Name}");
             buildStructure.AppendLine("{");
             foreach (var v in Variables)
