@@ -1,10 +1,9 @@
-﻿using ExportFunctions.Application;
+﻿using ExportFunctions.Application.Helper;
+using ExportFunctions.Application.Structures;
 
 string path = string.Empty;
-
 #if DEBUG
 path = @"E:\VisualStudio\repos\WinExportedFuncs\WinExportedFuncs";
-
 #else
 writepath:
 Console.WriteLine("Write directory project:");
@@ -15,26 +14,19 @@ if (!Directory.Exists(path))
     Console.WriteLine("Direcotry not found!");
     goto writepath;
 }
-
 #endif
-
 using (SolutionNativeExport solutionExport = new SolutionNativeExport())
 {
+    solutionExport.OnCompleted += (StructResultExtern result) =>
+    {
+        Console.WriteLine(result.Span);
+        Console.WriteLine(result.FileStructures);
+        Console.WriteLine(result.FileFunctions);
+    };
     solutionExport.Load(path);
-    solutionExport.ExportFunctions((span) =>
-    {
-        
-        Console.WriteLine(span);
-    }, 
-    (span) =>
-    {
-        Console.WriteLine(span);
-    });
-
-
-    Console.ReadLine();
+    solutionExport.Export();
 }
+Console.ReadLine();
 #if !DEBUG
 goto writepath;
-
 #endif

@@ -1,12 +1,14 @@
-﻿using ExportFunctions.Application.Structures;
+﻿using ExportFunctions.Application.Converters;
+using ExportFunctions.Application.Structures;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace ExportFunctions.Application
+namespace ExportFunctions.Application.Helper
 {
     public class SolutionNativeExport : IDisposable
     {
+        public Action<StructResultExtern>? OnCompleted;
 
         public List<StructNativeStructure> nativeStructures
         {
@@ -18,11 +20,6 @@ namespace ExportFunctions.Application
             get; private set;
         } = new List<StructNativeFunction>();
 
-
-
-
-
-
         public string PathSolution
         {
             get; private set;
@@ -32,16 +29,9 @@ namespace ExportFunctions.Application
             get; private set;
         } = new Dictionary<string, string>();
         public List<string> Files { get; private set; } = new List<string>();
-
-        public string MainFile
-        {
-            get; private set;
-        }
+        public string MainFile { get; private set; }
 
         private const string Exports = "Exports";
-
-
-        // export function in C# code 
         public string DirectoryExport
         {
             get; set;
@@ -51,8 +41,6 @@ namespace ExportFunctions.Application
 
         public string? FullPathStructures { get; set; }
         public string? FullPathHelper { get; set; }
-
-
         public string DefineExportFunction = "ExportFunction";
 
 
@@ -70,7 +58,7 @@ namespace ExportFunctions.Application
 
 
 
-            this.Clear();
+            Clear();
 
             PathSolution = path;
 
@@ -85,8 +73,6 @@ namespace ExportFunctions.Application
 
 
             FileInfo mainFileOne = new FileInfo(mainFiles.First());
-
-
 
             FileData.Add(mainFileOne.FullName, File.ReadAllText(mainFileOne.FullName));
 
@@ -109,13 +95,9 @@ namespace ExportFunctions.Application
                 FileData.Add(f, File.ReadAllText(f));
 
             }
-
-
-            Console.WriteLine($"Finish read files.");
-
         }
 
-        public void ExportFunctions(Action<TimeSpan> FinishStructures, Action<TimeSpan> FinishExportFunctions)
+        public void Export(string nameFileStructures = $"ExternStructures.cs", string nameFileFunctions = $"ExternFunctions.cs")
         {
             nativeStructures.Clear();
 
@@ -128,16 +110,24 @@ namespace ExportFunctions.Application
                 // struct.+?[\w]+[\W]+?\{[\w\W]+?}
                 FindStrucutures(fileRead, file.Key);
 
-                FindExportFunctions(fileRead, file.Key);
+
+
+
+                FindExportFunctions(fileRead, file.Key, default);
             }
-            SaveStructuresToFile();
-            SaveExternFunctionsToFile();
+            string filePathStr = SaveStructuresToFile(nameFileStructures);
+            string filePathFunc = SaveExternFunctionsToFile(nameFileFunctions);
             sw.Stop();
-            FinishStructures?.Invoke(sw.Elapsed);
+            OnCompleted?.Invoke(new StructResultExtern()
+            {
+                Span = sw.Elapsed,
+                FileFunctions = filePathFunc,
+                FileStructures = filePathStr
+            });
 
         }
 
-        private void FindExportFunctions(string fileStringData, string fileFullPath)
+        private void FindExportFunctions(string fileStringData, string fileFullPath, string[] customStructures = default)
         {
             var arrayFunctions = fileStringData.
                  Split("\n").Select(line => line.Trim()).
@@ -158,15 +148,16 @@ namespace ExportFunctions.Application
                 {
                     if (item.Length == 2)
                     {
-                        functions.Add($"{Converter.ConvertTypeCppToCsharp(item[0])} {item[1]}");
+                        var itemType = item[0];
+                        var itemName = item[1];
+
+                        itemType = Converter.ConvertTypeCppToCsharp(itemType, customStructures);
+                        functions.Add($"{itemType} {itemName}");
                     }
 
                 }
-                foreach (var item in functions)
-                {
-                    Console.WriteLine($"-> {item}");
-                }
-           
+
+
                 structNativeFunctions.Add(new StructNativeFunction()
                 {
                     FullPath = fileFullPath,
@@ -241,7 +232,7 @@ namespace ExportFunctions.Application
 
         }
 
-        private void SaveExternFunctionsToFile(string nameFile = $"ExternFunctions.cs")
+        private string SaveExternFunctionsToFile(string nameFile)
         {
             if (!Directory.Exists(FullPathHelper))
             {
@@ -250,29 +241,32 @@ namespace ExportFunctions.Application
             string filePath = Path.GetFullPath(Path.Combine(FullPathHelper, $"{nameFile}"));
 
 
-
+            //typeReturn = Converter.ConvertTypeCppToCsharp(typeReturn);
             try
             {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.AppendLine("using System.Runtime.InteropServices;");
                 stringBuilder.AppendLine("namespace Interop\r\n{");
                 stringBuilder.AppendLine("\tpublic static class Interop\r\n\t{");
+
+            
                 foreach (var structures in structNativeFunctions)
                 {
-                    stringBuilder.AppendLine($"\t{structures.ToCSharpCode()}");
+                    //structures.ReturnType = Converter.ConvertTypeCppToCsharp(structures.ReturnType);
+                    stringBuilder.AppendLine($"\t{structures.ToCSharpCode(Converter.ConvertTypeCppToCsharp(structures.ReturnType , nativeStructures.Select(a => a.Name).ToArray()))}");
                 }
                 stringBuilder.AppendLine("\t\n}\n}\n\n");
                 File.WriteAllText(filePath, stringBuilder.ToString());
-
+                return filePath;
             }
             catch (Exception)
             {
 
-                throw;
+                return string.Empty;
             }
         }
 
-        private void SaveStructuresToFile(string nameFile = $"ExternStructures.cs")
+        private string SaveStructuresToFile(string nameFile)
         {
             if (!Directory.Exists(FullPathStructures))
             {
@@ -293,11 +287,12 @@ namespace ExportFunctions.Application
 
                 }
                 File.WriteAllText(filePath, stringBuilder.ToString());
+                return filePath;
             }
             catch (Exception)
             {
 
-                throw;
+                return string.Empty;
             }
 
 
@@ -313,7 +308,7 @@ namespace ExportFunctions.Application
 
         public void Dispose()
         {
-            this.Clear();
+            Clear();
         }
     }
 }

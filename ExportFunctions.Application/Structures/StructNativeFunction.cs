@@ -12,9 +12,10 @@ namespace ExportFunctions.Application.Structures
         public string FullPath;
         public int IntLine;
        
-        public string ToCSharpCode()
+        public string ToCSharpCode( string returnTypeRe = "")
         {
-            
+            if (!string.IsNullOrEmpty(returnTypeRe))
+                ReturnType = returnTypeRe;
             StringBuilder stringBuilder = new StringBuilder();
             // [DllImport(Lib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "GetProcessFilePath")]
 

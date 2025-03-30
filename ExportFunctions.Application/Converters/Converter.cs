@@ -1,4 +1,4 @@
-﻿namespace ExportFunctions.Application
+﻿namespace ExportFunctions.Application.Converters
 {
     public static class Converter
     {
@@ -25,8 +25,10 @@
         public enum _int
         {
             ULONG_PTR,
-            
+
         }
+
+
 
         public static string ToTypeof(string type, Type type1, int rep)
         {
@@ -68,12 +70,12 @@
 
         public static List<string> GetArgumentsFunction(string func)
         {
-            
+
             string strResult = string.Empty;
             bool result = false;
             foreach (var char_ in func)
             {
-                if(char_ == '(')
+                if (char_ == '(')
                 {
                     result = true;
                     continue;
@@ -91,13 +93,20 @@
             return strResult.Split(",").Select(x => x.Trim()).ToList();
         }
 
-
-        
-        public static string ConvertTypeCppToCsharp(string type)
+        private static string[] baseTypes = new string[]
         {
-            if(type == "int")
-                return "int";
+            "int", "bool", "char", "byte", "sbyte", "short", "ushort", "uint", "long", "ulong", "float", "double", "decimal", "string", "object"
+        };
 
+
+        public static string ConvertTypeCppToCsharp(string type , string[] customStructures = default)
+        {
+
+            if (baseTypes.Contains(type))
+                return type;
+ 
+            if (customStructures != null && customStructures.Contains(type))
+                return type;
 
             string _type = ToTypeof(type, typeof(_IntPtr), 1);
             if (string.IsNullOrEmpty(_type))

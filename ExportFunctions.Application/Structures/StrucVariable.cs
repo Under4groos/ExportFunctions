@@ -1,4 +1,6 @@
-﻿namespace ExportFunctions.Application.Structures
+﻿using ExportFunctions.Application.Converters;
+
+namespace ExportFunctions.Application.Structures
 {
     public struct StrucVariable
     {
