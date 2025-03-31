@@ -21,7 +21,7 @@ using (SolutionNativeExport solutionExport = new SolutionNativeExport())
     solutionExport.DefineExportFunction = "ExportFunction";
 
     // Дирректоиря для экспорта.
-    solutionExport.Exports = "Exports";
+    solutionExport.Exports = Path.Combine("C:\\Users\\UnderKo\\Downloads", "Exports");
     solutionExport.OnCompleted += (StructResultExtern result) =>
     {
         Console.WriteLine(result.Span);

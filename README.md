@@ -2,6 +2,23 @@
 
 Конвертирует нативные функции и структуры в C# для их вызова.
 
+# expo command
+
+Args
+
+```
+-p direcotry project"
+-d name #define export
+-e direcotry export files
+```
+
+```
+expo -p "E:\VisualStudio\repos\WinExportedFuncs\WinExportedFuncs" -d "ExportFunctionDebug" -e "C:\Users\UnderKo\Downloads\Exports"
+```
+
+
+# Using C# code lib 
+
 ## Пример С++ функции
 
 ```C++
