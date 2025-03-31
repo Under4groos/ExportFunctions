@@ -1,4 +1,4 @@
-﻿namespace ExportFunctions.Application.Structures
+﻿namespace ExportFunctions.Structures
 {
     public struct StructResultExtern
     {

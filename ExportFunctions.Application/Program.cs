@@ -1,5 +1,5 @@
-﻿using ExportFunctions.Application.Helper;
-using ExportFunctions.Application.Structures;
+﻿using ExportFunctions.Helper;
+using ExportFunctions.Structures;
 
 string path = string.Empty;
 #if DEBUG

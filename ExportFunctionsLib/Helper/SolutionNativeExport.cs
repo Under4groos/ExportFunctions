@@ -1,10 +1,10 @@
-﻿using ExportFunctions.Application.Converters;
-using ExportFunctions.Application.Structures;
+﻿using ExportFunctions.Converters;
+using ExportFunctions.Structures;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace ExportFunctions.Application.Helper
+namespace ExportFunctions.Helper
 {
     public class SolutionNativeExport : IDisposable
     {
@@ -252,11 +252,11 @@ namespace ExportFunctions.Application.Helper
                 stringBuilder.AppendLine("namespace Interop\r\n{");
                 stringBuilder.AppendLine("\tpublic static class Interop\r\n\t{");
 
-            
+
                 foreach (var structures in structNativeFunctions)
                 {
                     //structures.ReturnType = Converter.ConvertTypeCppToCsharp(structures.ReturnType);
-                    stringBuilder.AppendLine($"\t{structures.ToCSharpCode(Converter.ConvertTypeCppToCsharp(structures.ReturnType , nativeStructures.Select(a => a.Name).ToArray()))}");
+                    stringBuilder.AppendLine($"\t{structures.ToCSharpCode(Converter.ConvertTypeCppToCsharp(structures.ReturnType, nativeStructures.Select(a => a.Name).ToArray()))}");
                 }
                 stringBuilder.AppendLine("\t\n}\n}\n\n");
                 File.WriteAllText(filePath, stringBuilder.ToString());

@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace ExportFunctions.Application.Structures
+namespace ExportFunctions.Structures
 {
     
 

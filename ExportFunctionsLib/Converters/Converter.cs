@@ -1,4 +1,4 @@
-﻿namespace ExportFunctions.Application.Converters
+﻿namespace ExportFunctions.Converters
 {
     public static class Converter
     {

@@ -1,4 +1,4 @@
-﻿namespace ExportFunctions.Application.Helper
+﻿namespace ExportFunctions.Helper
 {
     public static class ExtDirectory
     {

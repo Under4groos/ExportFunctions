@@ -1,6 +1,6 @@
-﻿using ExportFunctions.Application.Converters;
+﻿using ExportFunctions.Converters;
 
-namespace ExportFunctions.Application.Structures
+namespace ExportFunctions.Structures
 {
     public struct StrucVariable
     {
@@ -8,7 +8,7 @@ namespace ExportFunctions.Application.Structures
         public string Name;
         public string TypeConvert;
 
-       
+
         public string ToStringConvert()
         {
             TypeConvert = Converter.ConvertTypeCppToCsharp(Type);
